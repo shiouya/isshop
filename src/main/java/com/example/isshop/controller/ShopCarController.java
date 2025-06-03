@@ -30,6 +30,7 @@ public class ShopCarController {
     @PostMapping("/shopcar/create/{id}")
     public ResponseEntity<?> create(@PathVariable Integer id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(23);
         Users user = userService.findByName(username);
         Product product = productService.findById(id);
         shopCarService.saveShopCar(user,product);
