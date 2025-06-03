@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改密碼</title>
+</head>
+<body>
+舊密碼:<input type="password" id="oldpassword" required>
+新密碼:<input type="password" id="newpassword" required>
+<button onclick="update()">修改</button>
+<button onclick="no()">取消</button>
+<div id="errormsg" style="color:red"></div>
+
+<script th:inline="javascript">
+    const token = localStorage.getItem("token");
+    function no(){
+        window.location.href = "/page/home";
+    }
+    function update(){
+        console.log(token)
+        var oldpassword = document.getElementById("oldpassword").value
+        var newpassword = document.getElementById("newpassword").value
+        const data = {
+            oldpassword: oldpassword,
+            newpassword: newpassword
+        };
+
+        fetch(/*[[@{/user/update}]]*/, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => {
+                        throw new Error(msg || "更新失敗");
+                    });
+                }
+                return response.text(); // 或 response.json()，依照你的 API 回傳
+            })
+            .then(() => {
+                window.location.href = "/page/home";
+            })
+            .catch(error => {
+                console.error("錯誤：", error.message);
+                errormsg.innerText = error.message;
+            });
+    }
+
+
+</script>
+
+</body>
+</html>

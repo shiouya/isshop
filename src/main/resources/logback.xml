@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProfile name="dev">
+        <logger name="com.example" level="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="com.example" level="WARN"/>
+    </springProfile>
+
+    <!-- 設定 Spring Profile -->
+<!--    <springProperty name="LOG_LEVEL" source="logging.level.root" defaultValue="WARN"/>-->
+
+    <!-- 設定 Console 輸出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 設定檔案輸出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按日期輪轉日誌，目前這樣設定，log檔的名稱會是 app-2021-01-01.0.log -->
+            <fileNamePattern>logs/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>  <!-- 單個日誌檔案的最大大小 -->
+            <maxHistory>30</maxHistory>  <!-- 最多保留 30 天的日誌 -->
+            <totalSizeCap>1GB</totalSizeCap>  <!-- 總共最多保留 1GB 日誌，超過則刪除最舊的 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 設定不同 package 的日誌級別 -->
+    <logger name="com.example.service" level="DEBUG"/>
+    <logger name="org.springframework" level="WARN"/>
+
+    <!-- 根日誌設定 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

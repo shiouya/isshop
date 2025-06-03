@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>註冊新會員</h1>
+使用者名稱:<input type="text" id="userName" required>
+密碼:<input type="password" id="password" required>
+<button onclick="create()">註冊</button>
+<div id="errormsg" style="color:red"></div>
+<script th:inline="javascript">
+    function create(){
+        var password = document.getElementById("password").value
+        var userName = document.getElementById("userName").value
+        const data = {
+            userName: userName,
+            password: password
+        };
+
+        fetch(/*[[@{/user/create}]]*/, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 失敗：取 response.text() 錯誤訊息，再 throw
+                    return response.text().then(msg => {
+                        throw new Error(msg || "註冊失敗");
+                    });
+                }
+                window.location.href = "/page/login";
+            })
+            .catch(error => {
+                console.error("錯誤：", error.message);
+                errormsg.innerText = error.message;
+            });
+    }
+
+</script>
+
+</body>
+</html>

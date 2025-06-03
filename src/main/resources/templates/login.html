@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登入頁面</title>
+</head>
+<body>
+<h1>歡迎登入</h1>
+使用者名稱:<input type="text" id="userName" required>
+密碼:<input type="password" id="password" required>
+<button onclick="submit()">登入</button>
+<button onclick="create()">註冊</button>
+<div id="errormsg" style="color:red"></div>
+<script th:inline="javascript">
+function submit(){
+    var password = document.getElementById("password").value
+    var userName = document.getElementById("userName").value
+    const data = {
+        userName: userName,
+        password: password
+    };
+
+    fetch(/*[[@{/login}]]*/, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+        if (!response.ok) {
+            // 失敗：取 response.text() 錯誤訊息，再 throw
+            return response.text().then(msg => {
+                throw new Error(msg || "登入失敗");
+            });
+        }
+        // 成功：取回 token
+        return response.text();
+    })
+        .then(token => {
+            localStorage.setItem("token", token);//儲存token
+            window.location.href = "/page/home"; //跳轉頁面
+        })
+        .catch(error => {
+            console.error("錯誤：", error.message);
+            errormsg.innerText = error.message;
+        });
+}
+
+function create(){
+    window.location.href ="/page/user/create"
+}
+
+</script>
+</body>
+</html>

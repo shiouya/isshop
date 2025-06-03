@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改商品</title>
+</head>
+<body>
+ID:<span id="id" th:text="${product.productId}"></span>
+<div class="mb-3">
+    <label for="productName" class="form-label">商品名稱</label>
+    <input type="text" class="form-control" id="productName" th:value="${product.productName}">
+</div>
+<div class="mb-3">
+    <label for="productPrice" class="form-label">價格</label>
+    <input type="number" class="form-control" id="productPrice" th:value="${product.price}">
+</div>
+<div class="mb-3">
+    <img id="preview-image" th:src="@{'/product/photo/' + ${product.productId}}"
+         alt="商品圖片" width="200">
+    <label for="fileInput" class="form-label">商品圖片</label>
+    <input type="file" class="form-control" id="fileInput">
+</div>
+<button th:if="${create}" onclick="create()">新增</button>
+<button th:if="${!create}" onclick="update()">修改</button>
+<script th:inline="javascript">
+    document.getElementById("fileInput").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("preview-image");
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result; // 即時改變圖片來源
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function update(){
+        const productId = document.getElementById("id").textContent.trim();
+        var productName = document.getElementById("productName").value
+        var productPrice = document.getElementById("productPrice").value
+        var file = fileInput.files[0];
+        const token = localStorage.getItem("token");
+        //
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("productName", productName);
+        formData.append("productPrice", productPrice);
+        //
+        fetch(`/product/update/${productId}`, { // 替換成你的商品 ID
+            method: "Put",
+            headers: {
+                "Authorization": "Bearer " + token // 自訂 Header
+            },
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 失敗：取 response.text() 錯誤訊息，再 throw
+                    return response.text().then(msg => {
+                        throw new Error(msg || "修改失敗");
+                    });
+                }
+                window.location.href = "/page/home";
+            })
+            .catch(error => {
+                console.error("錯誤：", error.message);
+            });
+    }
+    function create(){
+        var productName = document.getElementById("productName").value
+        var productPrice = document.getElementById("productPrice").value
+        var file = fileInput.files[0];
+        const token = localStorage.getItem("token");
+        //
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("productName", productName);
+        formData.append("productPrice", productPrice);
+        //
+        fetch(`/product/create`, { // 替換成你的商品 ID
+            method: "Post",
+            headers: {
+                "Authorization": "Bearer " + token // 自訂 Header
+            },
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 失敗：取 response.text() 錯誤訊息，再 throw
+                    return response.text().then(msg => {
+                        throw new Error(msg || "修改失敗");
+                    });
+                }
+                window.location.href = "/page/home";
+            })
+            .catch(error => {
+                console.error("錯誤：", error.message);
+            });
+    }
+</script>
+</body>
+</html>

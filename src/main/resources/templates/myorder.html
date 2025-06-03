@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的訂單</title>
+</head>
+<body>
+<div id="order-container" class="container mt-4"></div>
+
+
+<script th:inline="javascript">
+    const token = localStorage.getItem("token");
+    
+    (function (){
+
+        fetch(`/order`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(response =>  response.json())
+            .then(shopCars => {
+                console.log(shopCars)
+                const container = document.getElementById('cart-container');
+                container.innerHTML = '';
+                shopCars.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'card mb-3';
+                    div.innerHTML = `
+      <div class="row g-0 align-items-center" id="div-${item.shopCarId}">
+        <div class="col-md-1 text-center">
+          <input type="checkbox" class="select-checkbox" value="${item.shopCarId}">
+        </div>
+        <div class="col-md-2 text-center">
+          <img src="/product/photo/${item.productId}" class="img-fluid rounded-start" alt="${item.productName}">
+        </div>
+        <div class="col-md-6">
+          <div class="card-body">
+            <h5 class="card-title">${item.productName}</h5>
+            <p class="card-text text-muted">價格：$${item.productPrice}</p>
+          </div>
+        </div>
+        <div class="col-md-3 text-center">
+          <div class="input-group justify-content-center">
+            <button class="btn btn-outline-secondary" onclick="updateQuantity(${item.shopCarId}, 'cut')">-</button>
+            <span id="quantity-${item.shopCarId}" class="input-group-text">${item.quantity}</span>
+            <button class="btn btn-outline-secondary" onclick="updateQuantity(${item.shopCarId}, 'add')">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error("取得購物車失敗：", error.message);
+            });
+
+    })()
+</script>
+</body>
+</html>
