@@ -26,7 +26,7 @@ public class OrderController {
     @PostMapping("/order/create")
     public ResponseEntity<?> addOrder(@RequestBody List<Integer> shopCar) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(1);
+        System.out.println(10);
         Users user = userService.findByName(username);
         orderService.createOrders(user,shopCar);
         return ResponseEntity.ok("success");
